@@ -20,27 +20,34 @@ interface TeacherItemProps {
   teacher: Teacher;
 }
 
-const TeacherItem: React.FC = () => {
+const TeacherItem: React.FC<TeacherItemProps> = ({ teacher }) => {
+  function createNewConnection() {
+    api.post('connections', {
+      user_id: teacher.id
+    });
+  }
+
   return (
     <article className="teacher-item">
       <header>
-        <img src="" alt="" />
+        <img src={teacher.avatar} alt={teacher.name} />
         <div>
-          <strong>name</strong>
-          <span>subject</span>
+          <strong>{teacher.name}</strong>
+          <span>{teacher.subject}</span>
         </div>
       </header>
 
-      <p>bio</p>
+      <p>{teacher.bio}</p>
 
       <footer>
         <p>
-          Preço/hora
-          <strong>R$ </strong>
+          Preço/hora:
+          <strong>R$ {teacher.cost}</strong>
         </p>
         <a
+          onClick={createNewConnection}
           target="_blank"
-          href={`https://wa.me/+55`}
+          href={`https://wa.me/+55${teacher.whatsapp}`}
         >
           <img src={whatsappIcon} alt="Whatsapp" />
           Entrar em contato

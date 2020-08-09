@@ -1,21 +1,43 @@
-import React from 'react';
+import React, { useState, FormEvent } from 'react';
 
 import Input from '../../components/Input';
 import Select from '../../components/Select';
 import PageHeader from '../../components/PageHeader';
-import TeacherItem from '../../components/TeacherItem';
+import TeacherItem, { Teacher } from '../../components/TeacherItem';
+
+import api from '../../services/api';
 
 import './styles.css';
 
 function TeacherList() {
+  const [teachers, setTeachers] = useState([]);
+  const [subject, setSubject] = useState('');
+  const [week_day, setWeekDay] = useState('');
+  const [time, setTime] = useState('');
+
+  async function handleSearchTeachers(e: FormEvent) {
+    e.preventDefault();
+
+    const response = await api.get('lessons', {
+      params: {
+        subject,
+        week_day,
+        time
+      }
+    });
+
+    setTeachers(response.data);
+}
+
   return (
     <div id="page-teacher-list" className="container">
       <PageHeader title="Esses são os proffys disponíveis.">
-        <form id="search-teachers">
+        <form id="search-teachers" onSubmit={handleSearchTeachers}>
           <Select
             name="subject"
             label="Matéria"
-            value=""
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
             options={[
               { value: 'Artes', label: 'Artes' },
               { value: 'Biologia', label: 'Biologia' },
@@ -32,7 +54,8 @@ function TeacherList() {
           <Select
             name="week_day"
             label="Dia da semana"
-            value=""
+            value={week_day}
+            onChange={(e) => setWeekDay(e.target.value)}
             options={[
               { value: '0', label: 'Domingo' },
               { value: '1', label: 'Segunda-feira' },
@@ -47,14 +70,17 @@ function TeacherList() {
             type="time"
             name="time"
             label="Hora"
-            value=""
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
           />
           <button type="submit">Procurar</button>
         </form>
       </PageHeader>
 
       <main>
-        <TeacherItem />
+        {teachers.map((teacher: Teacher) => (
+          <TeacherItem key={teacher.id} teacher={teacher} />
+        ))}
       </main>
     </div>
   );
